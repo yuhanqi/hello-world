@@ -48,7 +48,7 @@ DateTime::~DateTime()
 }
 void DateTime::showTime()
 {
-  printf("%d/%d/%d %d:%d:%d\n", year, month, day, hour, minute, second);
+  printf("datetime%:d/%d/%d %d:%d:%d\n", year, month, day, hour, minute, second);
   std::cout << sth << std::endl;
 }
  
