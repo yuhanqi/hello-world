@@ -10,7 +10,7 @@ public:
   DateTime(const DateTime &dt);
   ~DateTime();
   static void showTime();
-  void showMoon();  //作业：将当前公历转换为农历显示出来 
+  void showMoon();  
 };
 
 int DateTime::sth = 0;
@@ -48,7 +48,7 @@ DateTime::~DateTime()
 }
 void DateTime::showTime()
 {
-  printf("当前时间：%d/%d/%d %d:%d:%d\n", year, month, day, hour, minute, second);
+  printf("%d/%d/%d %d:%d:%d\n", year, month, day, hour, minute, second);
   std::cout << sth << std::endl;
 }
  
