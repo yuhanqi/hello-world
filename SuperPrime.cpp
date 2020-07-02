@@ -1,81 +1,149 @@
-class Number {
-public:
-  Number(int num):mNum(num) {
-  }
-  Number(const Number &n):mNum(n.mNum) {
-  }
-  ~Number();
-  NumberSet split() {
-  	NumberSet ns;
-  	int n = mNum;
-  	while(n != 0) {
-  	  int d = n % 10;
-  	  Number dig(d);
-  	  ns.add(dig);
-  	  n = n / 10;
+#include <iostream>
+class Prime {
+  public:
+  	Prime():number(0) {
 	}
-	return ns;
-  }
-  bool isPrime() {
-  	for(int i = 2; i < mNum; ++i) {
-  	  if(mNum % i == 0)
-  	    break;
+  	Prime(int n):number(n) {
 	}
-	if(i != mNum)
-	  return false;
-	return true;
-  }
-private:
-  const int mNum;
-};
-class NumberSet {
-private:
-  Number *nums[20];
-  int size;
-public:
-  NumberSet() {
-  	size = 0;
-  	for(int i = 0; i < 20; ++i)
-  	  nums[i] = NULL;
-  }
-  ~NumberSet() {
-  	for(int i = 0; i < size; ++i)
-  	  delete nums[i];
-  }
-  bool add(const Number &n) {
-  	if(size != 20 && nums[size] == NULL) {
-	 nums[size] = new Number(n); 
-     size += 1;
-     return true;
-    }
-    return false;
-  }
-  Number sum() {
-  	Number sum(0);
-  	for(int i = 0; i < size; ++i) {
-  	  if(nums[i] != NULL)
-  	    sum.add(*(nums[i]));
+	~Prime() {
 	}
-	return sum;
-  }
-};
-class SuperPrime : public Number {
-public:
-  SuperPrime(int num);
-  ~SuperPrime();
+  virtual bool isPrime() { 
+  	if (number == 1 || number == 0)
+			return false;
+	  for (int i = 2; i*i <= number; i++) {
+	  	if (number%i == 0) {
+	  		return false;
+			}
+		}
+		return true; 
+	} 
+  private:
+  	const int number;
+}; 
+class PrimeSet {
+  public:
+  	PrimeSet(int size) 
+	{ 
+  	  set = new Prime*[3];
+  	  pset = new Prime*[size];
+  	  this->size = size;
+  	  index = 0;
+  	  pindex = 0;
+	}
 
-  bool isPrime();
+	~PrimeSet() 
+	{
+  	for (int i = 0; i < 3; ++i)  
+			delete set[i]; 
+	  delete[] set;
 
-  Prime sumBit();
-  Prime multiBit();
-  Prime sqaureSumBit();
-private:
-  const int num;
-}
-int main()
+	  for (int i = 0; i < index; ++i)  
+			delete pset[i]; 
+	  delete[] pset;
+	}
+
+ 	int count() 
+	{
+  	int count = 0;
+  	for (int i = 0; i < size; i++)
+      if(pset[i]->isPrime())
+ 	      count += 1;
+	  return count; 
+	}
+	void add(int n) {
+	  Prime *p = new Prime(n);
+	  set[index] = p;
+	  index += 1;
+	}
+
+	bool add(Prime *p) 
+	{
+		if(pindex == size)  return false;
+	  pset[pindex] = p;
+	  pindex += 1;
+	  return true;
+	}
+
+	bool isAllPrime()
+	{
+	  for(int i = 0; i < index; i++)
+	    if (!set[i]->isPrime())
+	      return false;
+	  return true;
+	} 
+  private:
+  	Prime **set, **pset;
+		int size, index, pindex;
+};
+
+class SuperPrime : public Prime 
 {
-    SuperPrime sp(113);
-    if(sp.isPrime()) {
-        ; // do something
-    }
+  public:
+  	SuperPrime():Prime(0), pset(3) {}
+  	SuperPrime(int n):Prime(n), pset(3) 
+	    {
+	    	int i = 0;
+			int temp = n;
+		 	while(temp > 0) {
+	  		int t = temp % 10;
+			  temp /= 10;
+		  	A[i++] = t;  
+			}
+			A[i] = -1;
+			sum();
+			multi();
+			squareSum();
+			pset.add(n);
+		}
+  	~SuperPrime() {}
+  	virtual bool isPrime() 
+	    {
+	  	if (Prime::isPrime() && pset.isAllPrime())
+	    	return true; 
+  		return false;
+		}
+  private:
+  	int A[100];
+  	PrimeSet pset;
+		int sum() 
+		{
+			int n = 0, i = 0;
+			while(A[i] >= 0) 
+			{
+				n += A[i++];
+			}
+			pset.add(n);
+		  return 0;
+		}
+		int multi() 
+		{
+			int n = 1, i = 0;
+			while(A[i] >= 0) 
+			{
+				n *= A[i++];
+			}
+			pset.add(n);
+		  return 0;
+		}
+		int squareSum() 
+		{
+			int n = 0, i = 0;
+			while(A[i] >= 0) 
+			{
+				n += A[i]*A[i];
+				i++;
+			}
+			pset.add(n);
+		  return 0;
+		}
+};
+int main() 
+{
+  SuperPrime sp(113);
+  SuperPrime sp1(131);
+  PrimeSet set(2);
+  set.add(&sp);
+  set.add(&sp1);
+  std::cout << "How many:" << set.count() << std::endl;
+  return 0;
 }
